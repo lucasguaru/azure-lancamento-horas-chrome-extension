@@ -20,5 +20,6 @@
       "run_at": "document_idle",
       "world": "MAIN"
     }
-  ]
+  ],
+  "version_name": "1.0.0 (build 2026.04.08.4)"
 }

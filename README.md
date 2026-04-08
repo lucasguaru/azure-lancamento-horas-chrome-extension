@@ -21,8 +21,6 @@ npm run build
 4. Clique em **Load unpacked** e selecione a pasta `dist/`
 5. Acesse o Azure DevOps (ex.: `https://dev.azure.com/<org>/<project>`) e recarregue a página
 
-**Screenshot esperado**
-
 ![Onde gerenciar extensões](docs/images/01-chrome-extensions.png)
 
 ![Onde habilitar o Developer mode](docs/images/02-chrome-extensions-developer-mode.png)
@@ -33,16 +31,19 @@ npm run build
 
 Este modo é para quem **só quer usar** a extensão sem clonar o repositório.
 
-1. Baixe o arquivo `chrome-ado-hours.zip` (link a ser definido)
+1. Baixe o arquivo [`chrome-ado-hours-1.0.0.zip`](https://github.com/orangedoorit/azure-lancamento-horas-chrome-extension/releases/download/v1.0.0/chrome-ado-hours-1.0.0.zip)
 2. Extraia o ZIP em uma pasta (ex.: `chrome-ado-hours/`)
 3. No Chrome, abra `chrome://extensions`
 4. Ative **Developer mode**
 5. Clique em **Load unpacked** e selecione a pasta extraída (ela deve conter `manifest.json` e `content.js`)
-6. Acesse o Azure DevOps (ex.: `https://dev.azure.com/<org>/<project>`) e recarregue a página
+6. Acesse o [Azure DevOps da OrangeDoor](https://dev.azure.com/orangedoorit/OrangeDoor%20Global%20Projects) e recarregue a página
 
-**Screenshot esperado**
 
-![Onde importar/carregar a extensão extraída](docs/images/03-chrome-extensions-import-zip-extract.png)
+![Onde gerenciar extensões](docs/images/01-chrome-extensions.png)
+
+![Onde habilitar o Developer mode](docs/images/02-chrome-extensions-developer-mode.png)
+
+![Onde carregar a extensão (Load unpacked)](docs/images/02-chrome-extensions-load-unpacked.png)
 
 ## Funcionalidades
 
@@ -56,8 +57,6 @@ Cria um botão flutuante 🕒 no canto inferior direito e abre um modal para vis
   - Opções de exibição (ex.: finais de semana, agrupamento por hierarquia, colunas de data)
   - Modo edição com salvamento e validações
   - Considera feriados nacionais BR (2026–2030) embutidos no build
-
-**Screenshot esperado**
 
 ![Botão do overlay semanal](docs/images/04-weekly-overlay-button.png)
 
@@ -77,8 +76,6 @@ Cria um botão flutuante 📊 e abre um modal com uma tabela consolidada por hie
   - Opção de exibir/ocultar finais de semana
   - Botão para **copiar a imagem** da tabela para a área de transferência
 
-**Screenshot esperado**
-
 ![Botão do relatório mensal](docs/images/08-monthly-hierarchy-button.png)
 
 ![Modal do relatório mensal aberto](docs/images/09-monthly-hierarchy-modal.png)
@@ -94,25 +91,9 @@ Na tela de criar task (e também em edição de work item), adiciona uma UI inli
   - Mantém um estado “desejado” (ex.: State, Priority, datas e horas)
   - Captura o “save” (inclusive via **Ctrl+S**) e aplica pós-save via API do ADO quando necessário
 
-**Screenshot esperado**
+![UI inline do Create Task a partir do Modal](docs/images/11-create-task-hierarchy.png)
 
 ![UI inline do Create Task Enhancer](docs/images/11-create-task-enhancer-inline.png)
-
-### 4) AutoParent na criação de work item (via parâmetro na URL)
-
-Ao abrir a tela de criação com um parâmetro `lh_parent`, a extensão tenta adicionar automaticamente o work item informado como **Parent** (“Add link → Add an existing work item as a parent”).
-
-- **Como usar**: abra a URL de criação com `?lh_parent=<id>`
-  - Exemplo (ilustrativo): `.../_workitems/create/Task?lh_parent=12345`
-- **Comportamento**:
-  - Executa uma vez por sessão (usa `sessionStorage` para evitar repetição na mesma navegação)
-  - Remove o parâmetro da URL após aplicar (para não reaplicar)
-
-**Screenshot esperado**
-
-![Exemplo de URL com lh_parent](docs/images/12-autoparent-url-param.png)
-
-![Modal Add link com parent selecionado](docs/images/13-autoparent-modal-add-link.png)
 
 ## Teclas de atalho
 
@@ -141,7 +122,7 @@ Ao abrir a tela de criação com um parâmetro `lh_parent`, a extensão tenta ad
 ## Desenvolvimento
 
 - **Build**: `npm run build` (gera `dist/`)
-- **ZIP para distribuir**: `npm run zip` (gera `dist/chrome-ado-hours.zip`)
+- **ZIP para distribuir**: `npm run zip` (gera `dist/chrome-ado-hours-<versao>.zip`)
 - **Watch**: `npm run dev` (build em modo `--watch`)
 - **Typecheck**: `npm run typecheck`
 
@@ -152,4 +133,5 @@ Ao abrir a tela de criação com um parâmetro `lh_parent`, a extensão tenta ad
   - Recarregue a página do ADO (F5)
   - Em `chrome://extensions`, clique em **Reload** na extensão
   - Confira se você carregou a pasta `dist/` (não `public/`)
+  - Ao invés de fazer reload na página, clique no link da página e aperte `Enter`
 

@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite build --watch",
+    "prebuild": "node scripts/sync-manifest-version.mjs",
     "build": "vite build",
-    "zip": "bestzip dist/chrome-ado-hours.zip dist/*",
+    "prezip": "npm run build",
+    "zip": "node scripts/zip-dist.mjs",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
