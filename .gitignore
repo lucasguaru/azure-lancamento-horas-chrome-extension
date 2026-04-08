@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.env
+tools/browser-bridge/server/.env
+*.log
+.DS_Store
+coverage/
+.build-version.json
+extensions/chrome-ado-hours/.build-version.json

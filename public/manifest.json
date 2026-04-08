@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "Azure DevOps Timesheet",
+  "version": "1.0.0",
+  "description": "Automacoes de lancamento de horas no Azure DevOps.",
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://dev.azure.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://dev.azure.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle",
+      "world": "MAIN"
+    }
+  ]
+}

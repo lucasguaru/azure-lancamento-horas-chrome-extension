@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="160" y1="128" x2="896" y2="896" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0078D4"/>
+      <stop offset="1" stop-color="#005A9E"/>
+    </linearGradient>
+    <radialGradient id="shine" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(330 270) rotate(45) scale(560)">
+      <stop stop-color="#FFFFFF" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#00111F" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect x="96" y="96" width="832" height="832" rx="184" fill="url(#bg)"/>
+  <rect x="96" y="96" width="832" height="832" rx="184" fill="url(#shine)"/>
+
+  <!-- Foreground glyph: checklist + clock -->
+  <g filter="url(#softShadow)" transform="translate(0 8)">
+    <!-- Checklist card -->
+    <rect x="230" y="302" width="348" height="420" rx="56" fill="#FFFFFF"/>
+    <!-- Checklist lines -->
+    <g opacity="0.96" fill="#0078D4">
+      <!-- checkmarks -->
+      <path d="M298 390c-6 0-12-2-16-7l-20-24c-7-9-6-22 3-29c9-7 22-6 29 3l7 9l26-32c7-9 20-10 29-3c9 7 10 20 3 29l-42 52c-4 5-10 8-16 9c-1 0-2 0-3 0z"/>
+      <path d="M298 488c-6 0-12-2-16-7l-20-24c-7-9-6-22 3-29c9-7 22-6 29 3l7 9l26-32c7-9 20-10 29-3c9 7 10 20 3 29l-42 52c-4 5-10 8-16 9c-1 0-2 0-3 0z"/>
+      <path d="M298 586c-6 0-12-2-16-7l-20-24c-7-9-6-22 3-29c9-7 22-6 29 3l7 9l26-32c7-9 20-10 29-3c9 7 10 20 3 29l-42 52c-4 5-10 8-16 9c-1 0-2 0-3 0z"/>
+      <!-- text lines -->
+      <rect x="374" y="366" width="168" height="28" rx="14"/>
+      <rect x="374" y="464" width="168" height="28" rx="14"/>
+      <rect x="374" y="562" width="168" height="28" rx="14"/>
+    </g>
+
+    <!-- Clock -->
+    <g transform="translate(0 0)">
+      <circle cx="700" cy="520" r="186" fill="#FFFFFF"/>
+      <circle cx="700" cy="520" r="150" fill="none" stroke="#0078D4" stroke-width="44" stroke-linecap="round" opacity="0.98"/>
+      <!-- hands (10:10-ish) -->
+      <path d="M700 520L620 450" stroke="#0078D4" stroke-width="44" stroke-linecap="round"/>
+      <path d="M700 520L780 500" stroke="#0078D4" stroke-width="44" stroke-linecap="round"/>
+      <circle cx="700" cy="520" r="22" fill="#0078D4"/>
+    </g>
+  </g>
+</svg>
