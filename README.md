@@ -7,6 +7,24 @@ Extensão (Manifest V3) para **automatizar e facilitar o lançamento de horas** 
 - **Domínio**: `https://dev.azure.com/*`
 - **Tipo**: content script (executa no contexto da página)
 
+## Instalação (modo usuário)
+
+Este modo é para quem **só quer usar** a extensão sem clonar o repositório.
+
+1. Baixe o arquivo [`chrome-ado-hours-1.0.0.zip`](https://github.com/orangedoorit/azure-lancamento-horas-chrome-extension/releases/download/v1.0.0/chrome-ado-hours-1.0.0.zip)
+2. Extraia o ZIP em uma pasta (ex.: `chrome-ado-hours/`)
+3. No Chrome, abra `chrome://extensions`
+4. Ative **Developer mode**
+5. Clique em **Load unpacked** e selecione a pasta extraída (ela deve conter `manifest.json` e `content.js`)
+6. Acesse o [Azure DevOps da OrangeDoor](https://dev.azure.com/orangedoorit/OrangeDoor%20Global%20Projects) e recarregue a página
+
+
+![Onde gerenciar extensões](docs/images/01-chrome-extensions.png)
+
+![Onde habilitar o Developer mode](docs/images/02-chrome-extensions-developer-mode.png)
+
+![Onde carregar a extensão (Load unpacked)](docs/images/02-chrome-extensions-load-unpacked.png)
+
 ## Instalação (modo desenvolvedor)
 
 1. Rode o build:
@@ -20,24 +38,6 @@ npm run build
 3. Ative **Developer mode**
 4. Clique em **Load unpacked** e selecione a pasta `dist/`
 5. Acesse o Azure DevOps (ex.: `https://dev.azure.com/<org>/<project>`) e recarregue a página
-
-![Onde gerenciar extensões](docs/images/01-chrome-extensions.png)
-
-![Onde habilitar o Developer mode](docs/images/02-chrome-extensions-developer-mode.png)
-
-![Onde carregar a extensão (Load unpacked)](docs/images/02-chrome-extensions-load-unpacked.png)
-
-## Instalação (modo usuário)
-
-Este modo é para quem **só quer usar** a extensão sem clonar o repositório.
-
-1. Baixe o arquivo [`chrome-ado-hours-1.0.0.zip`](https://github.com/orangedoorit/azure-lancamento-horas-chrome-extension/releases/download/v1.0.0/chrome-ado-hours-1.0.0.zip)
-2. Extraia o ZIP em uma pasta (ex.: `chrome-ado-hours/`)
-3. No Chrome, abra `chrome://extensions`
-4. Ative **Developer mode**
-5. Clique em **Load unpacked** e selecione a pasta extraída (ela deve conter `manifest.json` e `content.js`)
-6. Acesse o [Azure DevOps da OrangeDoor](https://dev.azure.com/orangedoorit/OrangeDoor%20Global%20Projects) e recarregue a página
-
 
 ![Onde gerenciar extensões](docs/images/01-chrome-extensions.png)
 
