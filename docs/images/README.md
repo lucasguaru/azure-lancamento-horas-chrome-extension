@@ -17,4 +17,6 @@ Arquivos esperados (PNG):
 - `11-create-task-enhancer-inline.png`
 - `12-autoparent-url-param.png`
 - `13-autoparent-modal-add-link.png`
+- `14-weekly-overlay-toggle-lh-actions-wrong-day.png`
+- `15-weekly-overlay-toggle-weekends-hidden-hours.png`
 

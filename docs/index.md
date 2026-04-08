@@ -19,11 +19,11 @@ Este modo é para quem **só quer usar** a extensão sem clonar o repositório.
 6. Acesse o [Azure DevOps da OrangeDoor](https://dev.azure.com/orangedoorit/OrangeDoor%20Global%20Projects) e recarregue a página
 
 
-![Onde gerenciar extensões](docs/images/01-chrome-extensions.png)
+![Onde gerenciar extensões](images/01-chrome-extensions.png)
 
-![Onde habilitar o Developer mode](docs/images/02-chrome-extensions-developer-mode.png)
+![Onde habilitar o Developer mode](images/02-chrome-extensions-developer-mode.png)
 
-![Onde carregar a extensão (Load unpacked)](docs/images/02-chrome-extensions-load-unpacked.png)
+![Onde carregar a extensão (Load unpacked)](images/02-chrome-extensions-load-unpacked.png)
 
 ## Instalação (modo desenvolvedor)
 
@@ -39,11 +39,11 @@ npm run build
 4. Clique em **Load unpacked** e selecione a pasta `dist/`
 5. Acesse o Azure DevOps (ex.: `https://dev.azure.com/<org>/<project>`) e recarregue a página
 
-![Onde gerenciar extensões](docs/images/01-chrome-extensions.png)
+![Onde gerenciar extensões](images/01-chrome-extensions.png)
 
-![Onde habilitar o Developer mode](docs/images/02-chrome-extensions-developer-mode.png)
+![Onde habilitar o Developer mode](images/02-chrome-extensions-developer-mode.png)
 
-![Onde carregar a extensão (Load unpacked)](docs/images/02-chrome-extensions-load-unpacked.png)
+![Onde carregar a extensão (Load unpacked)](images/02-chrome-extensions-load-unpacked.png)
 
 ## Funcionalidades
 
@@ -61,17 +61,17 @@ Cria um botão flutuante 🕒 no canto inferior direito e abre um modal para vis
   - **Mostrar LH/Ações**: habilite quando precisar identificar “ações”/atalhos de lançamento e conferir rapidamente **se você lançou no dia errado** (ex.: está lançando hoje as horas de ontem).
   - **Mostrar fim de semana**: habilite quando existirem horas em **sábado/domingo** e elas não estiverem aparecendo na visualização atual.
 
-![Botão do overlay semanal](docs/images/04-weekly-overlay-button.png)
+![Botão do overlay semanal](images/04-weekly-overlay-button.png)
 
-![Modal do overlay semanal aberto](docs/images/05-weekly-overlay-modal.png)
+![Modal do overlay semanal aberto](images/05-weekly-overlay-modal.png)
 
-![Overlay semanal em modo edição](docs/images/06-weekly-overlay-edit-mode.png)
+![Overlay semanal em modo edição](images/06-weekly-overlay-edit-mode.png)
 
-![Overlay semanal em modo intervalo (range)](docs/images/07-weekly-overlay-range-mode.png)
+![Overlay semanal em modo intervalo (range)](images/07-weekly-overlay-range-mode.png)
 
-![Exemplo: Mostrar LH/Ações para revisar lançamento em dia diferente (hoje lançando horas de ontem)](docs/images/14-weekly-overlay-toggle-lh-actions-wrong-day.png)
+![Exemplo: Mostrar LH/Ações para revisar lançamento em dia diferente (hoje lançando horas de ontem)](images/14-weekly-overlay-toggle-lh-actions-wrong-day.png)
 
-![Exemplo: Mostrar fim de semana para exibir horas lançadas no sábado/domingo](docs/images/15-weekly-overlay-toggle-weekends-hidden-hours.png)
+![Exemplo: Mostrar fim de semana para exibir horas lançadas no sábado/domingo](images/15-weekly-overlay-toggle-weekends-hidden-hours.png)
 
 ### 2) Relatório mensal por hierarquia (Monthly Hierarchy)
 
@@ -83,11 +83,11 @@ Cria um botão flutuante 📊 e abre um modal com uma tabela consolidada por hie
   - Opção de exibir/ocultar finais de semana
   - Botão para **copiar a imagem** da tabela para a área de transferência
 
-![Botão do relatório mensal](docs/images/08-monthly-hierarchy-button.png)
+![Botão do relatório mensal](images/08-monthly-hierarchy-button.png)
 
-![Modal do relatório mensal aberto](docs/images/09-monthly-hierarchy-modal.png)
+![Modal do relatório mensal aberto](images/09-monthly-hierarchy-modal.png)
 
-![Ação de copiar imagem no relatório mensal](docs/images/10-monthly-hierarchy-copy-image.png)
+![Ação de copiar imagem no relatório mensal](images/10-monthly-hierarchy-copy-image.png)
 
 ### 3) Enhancer de criação/edição de task (Create Task Enhancer)
 
@@ -98,9 +98,9 @@ Na tela de criar task (e também em edição de work item), adiciona uma UI inli
   - Mantém um estado “desejado” (ex.: State, Priority, datas e horas)
   - Captura o “save” (inclusive via **Ctrl+S**) e aplica pós-save via API do ADO quando necessário
 
-![UI inline do Create Task a partir do Modal](docs/images/11-create-task-hierarchy.png)
+![UI inline do Create Task a partir do Modal](images/11-create-task-hierarchy.png)
 
-![UI inline do Create Task Enhancer](docs/images/11-create-task-enhancer-inline.png)
+![UI inline do Create Task Enhancer](images/11-create-task-enhancer-inline.png)
 
 ## Teclas de atalho
 
