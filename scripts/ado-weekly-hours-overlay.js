@@ -10,6 +10,7 @@
   const LS_RANGE_START = "__lh_range_start__";
   const LS_RANGE_END   = "__lh_range_end__";
   const KEY_OPEN_MODAL = "F2";
+  const LS_FLOATING_BTNS_HIDDEN = "__lh_floating_buttons_hidden__";
   const BUILD_VERSION  = __BUILD_VERSION__;
   let holidayNameByYmd = null; // { [YYYY-MM-DD]: string }
   function ensureHolidaysLoaded() {
@@ -82,6 +83,21 @@
       .lh-edit-input:focus { outline:2px solid #0078d4; border-color:#0078d4; }
       .lh-cell-changed { background:#fef3c7 !important; }
       .lh-cell-changed .lh-edit-input { border-color:#f59e0b !important; background:#fffbeb !important; }
+      .lh-col-today-head {
+        box-shadow: inset 0 0 0 2px rgba(37, 99, 235, 0.9);
+        background: #e8f1ff !important;
+      }
+      .lh-col-today-cell { background: #eef5ff !important; }
+      .lh-col-today-cell.lh-cell-changed { background: #fef3c7 !important; }
+      #${MODAL_ID} .lh-hours-footer-wrap table.lh-hours-table td {
+        font-weight: 700;
+        background: #f0f4ff;
+        border: 1px solid #ddd;
+        padding: 5px 7px;
+      }
+      #${MODAL_ID} .lh-hours-footer-wrap table.lh-hours-table td.lh-col-today-cell {
+        background: #e8efff !important;
+      }
     `;
     document.head.appendChild(s);
   }
@@ -239,6 +255,40 @@
 
   const { org: ORG, project: PROJECT } = parseOrgProject();
   const ADO_BASE = `https://dev.azure.com/${encodeURIComponent(ORG)}/${encodeURIComponent(PROJECT)}/_apis`;
+
+  function areFloatingButtonsHidden() {
+    try { return localStorage.getItem(LS_FLOATING_BTNS_HIDDEN) === "1"; } catch { return false; }
+  }
+
+  function setFloatingButtonsHidden(hidden) {
+    try { localStorage.setItem(LS_FLOATING_BTNS_HIDDEN, hidden ? "1" : "0"); } catch {}
+  }
+
+  function applyFloatingButtonsVisibility() {
+    const hidden = areFloatingButtonsHidden();
+    const ids = ["__lh_weekly_widget_btn__", "__lh_monthly_hierarchy_btn__"];
+    for (const id of ids) {
+      const el = document.getElementById(id);
+      if (!el) continue;
+      el.style.display = hidden ? "none" : "";
+    }
+  }
+
+  function ensureFloatingButtonsHotkeyInstalled() {
+    if (window.__lhFloatingButtonsHotkeyInstalled) return;
+    window.__lhFloatingButtonsHotkeyInstalled = true;
+    document.addEventListener("keydown", (e) => {
+      const key = String(e.key || "");
+      const code = String(e.code || "");
+      const isCtrlF2 = (e.ctrlKey || e.metaKey) && !e.altKey && (code === "F2" || key === "F2");
+      if (!isCtrlF2) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const next = !areFloatingButtonsHidden();
+      setFloatingButtonsHidden(next);
+      applyFloatingButtonsVisibility();
+    }, true);
+  }
 
   function workItemUrl(id) {
     return `https://dev.azure.com/${encodeURIComponent(ORG)}/${encodeURIComponent(PROJECT)}/_workitems/edit/${id}`;
@@ -522,8 +572,8 @@
     <!-- meta -->
     <div id="lh-meta" style="padding:4px 16px; color:#888; font-size:11px; flex-shrink:0; min-height:20px;"></div>
 
-    <!-- content (scrollable) -->
-    <div id="lh-content" style="padding:0 16px 16px; overflow:auto; flex:1;"></div>
+    <!-- content: coluna flex — lista rola, totais fixos embaixo -->
+    <div id="lh-content" style="padding:0 16px 12px; overflow:hidden; flex:1; min-height:0; display:flex; flex-direction:column;"></div>
   </div>
 </div>`;
   }
@@ -536,6 +586,23 @@
     const visibleKeys = visibleDates.map(toYmd);
     const visibleHdrs = visibleDates.map(formatDdMmm);
     const holidayByKey = holidayNameByYmd || {};
+    const todayKey = toYmd(new Date());
+
+    const colWidths = [
+      "52px", "140px", "120px", "90px",
+      ...(showDateCols ? ["92px", "92px"] : []),
+      ...(showLhActions ? ["68px", "110px"] : []),
+      ...visibleKeys.map(() => "60px"),
+    ];
+    function appendColGroup(tableEl) {
+      const cg = document.createElement("colgroup");
+      for (const w of colWidths) {
+        const col = document.createElement("col");
+        col.style.width = w;
+        cg.appendChild(col);
+      }
+      tableEl.appendChild(cg);
+    }
 
     function buildMissingTrackerHint(r) {
       const daysWithHours = visibleKeys
@@ -625,7 +692,10 @@
     }
 
     const table = document.createElement("table");
-    table.style.cssText = "width:100%; border-collapse:collapse; font-size:12px;";
+    table.className = "lh-hours-table";
+    table.style.cssText =
+      "width:100%; table-layout:fixed; border-collapse:collapse; font-size:12px; box-sizing:border-box;";
+    appendColGroup(table);
 
     // thead
     const thead = document.createElement("thead");
@@ -646,6 +716,7 @@
       ...visibleDates.map((d, i) => ({
         label: visibleHdrs[i], sub: WDAYS[d.getDay()],
         align: "center", width: "60px",
+        dayKey: visibleKeys[i],
         weekend: d.getDay() === 0 || d.getDay() === 6,
         holiday: holidayByKey[toYmd(d)] || null
       }))
@@ -658,6 +729,7 @@
       th.style.cssText = `position:sticky; top:0; background:${col.holiday ? "#fff1f2" : col.weekend ? "#fdf6e3" : "#f3f4f6"};
         border:1px solid #ddd; padding:5px 7px; text-align:${col.align}; white-space:nowrap;
         ${col.width ? `width:${col.width};` : ""}`;
+      if (col.dayKey && col.dayKey === todayKey) th.classList.add("lh-col-today-head");
       htr.appendChild(th);
     });
     thead.appendChild(htr);
@@ -925,6 +997,7 @@
         if (holiday) td.title = holiday;
         td.style.cssText = `${tdBase} text-align:center;${holiday ? " background:#fff1f2;" : isWe ? " background:#fffbf0;" : ""}`;
         if (isChanged) td.classList.add("lh-cell-changed");
+        if (k === todayKey) td.classList.add("lh-col-today-cell");
 
         if (editMode) {
           const inp = document.createElement("input");
@@ -988,9 +1061,9 @@
       tbody.appendChild(tr);
     });
 
-    // total row
+    // Linha de totais (tabela separada, fixa no rodapé da área de conteúdo — não rola com as tasks)
     const trTot = document.createElement("tr");
-    trTot.style.cssText = "font-weight:700; background:#f0f4ff;";
+    trTot.style.cssText = "font-weight:700;";
     const totals = computeTotals();
     const totalCompletedWork = computeCompletedWorkTotal();
     const totalVisibleHours = computeVisibleHoursTotalFromTotals(totals);
@@ -1024,15 +1097,58 @@
       td.id = `lh-tot-${k}`;
       td.style.cssText = `${tdBase} text-align:center;`;
       td.textContent = fmt(totals[k]);
+      if (k === todayKey) td.classList.add("lh-col-today-cell");
       trTot.appendChild(td);
     });
-    tbody.appendChild(trTot);
 
     table.appendChild(tbody);
-    const wrap = document.createElement("div");
-    wrap.style.marginTop = "8px";
-    wrap.appendChild(table);
-    return wrap;
+
+    const footerTable = document.createElement("table");
+    footerTable.className = "lh-hours-table";
+    footerTable.style.cssText =
+      "width:100%; table-layout:fixed; border-collapse:collapse; font-size:12px; box-sizing:border-box;";
+    appendColGroup(footerTable);
+    const tbodyFoot = document.createElement("tbody");
+    tbodyFoot.appendChild(trTot);
+    footerTable.appendChild(tbodyFoot);
+
+    const root = document.createElement("div");
+    root.style.cssText = "display:flex; flex-direction:column; flex:1; min-height:0; width:100%; margin-top:8px;";
+    const xWrap = document.createElement("div");
+    xWrap.style.cssText =
+      "flex:1; min-height:0; min-width:0; overflow-x:auto; overflow-y:hidden; display:flex; flex-direction:column;";
+    const innerCol = document.createElement("div");
+    innerCol.style.cssText =
+      "display:flex; flex-direction:column; flex:1; min-height:0; min-width:min-content;";
+    const yScroll = document.createElement("div");
+    yScroll.style.cssText =
+      "flex:1; min-height:0; min-width:min-content; overflow-y:auto; overflow-x:hidden;";
+    const footerOuter = document.createElement("div");
+    footerOuter.className = "lh-hours-footer-wrap";
+    footerOuter.style.cssText =
+      "flex-shrink:0; min-width:min-content; box-sizing:border-box; background:#f0f4ff; box-shadow:0 -1px 6px rgba(15,23,42,0.05); border-top:1px solid #d4def0;";
+
+    yScroll.appendChild(table);
+    footerOuter.appendChild(footerTable);
+    innerCol.appendChild(yScroll);
+    innerCol.appendChild(footerOuter);
+    xWrap.appendChild(innerCol);
+    root.appendChild(xWrap);
+
+    // A barra vertical do `yScroll` reduz a largura útil do corpo; o rodapé ficava mais largo e desalinhava as colunas.
+    const syncFooterToBodyWidth = () => {
+      const gutter = Math.max(0, Math.round(yScroll.offsetWidth - yScroll.clientWidth));
+      footerOuter.style.paddingRight = `${gutter}px`;
+    };
+    syncFooterToBodyWidth();
+    requestAnimationFrame(() => {
+      syncFooterToBodyWidth();
+      requestAnimationFrame(syncFooterToBodyWidth);
+    });
+    const roFooter = new ResizeObserver(() => syncFooterToBodyWidth());
+    roFooter.observe(yScroll);
+
+    return root;
   }
 
   function parseWorkItemIdFromRelationUrl(url) {
@@ -2006,9 +2122,11 @@
   const triggerOpen = () => { if (!document.getElementById(MODAL_ID)) openModal(); };
   btn.onclick = triggerOpen;
   document.body.appendChild(btn);
+  ensureFloatingButtonsHotkeyInstalled();
+  applyFloatingButtonsVisibility();
 
   document.addEventListener("keydown", e => {
-    if (e.key === KEY_OPEN_MODAL) {
+    if (!e.ctrlKey && !e.metaKey && !e.altKey && e.key === KEY_OPEN_MODAL) {
       e.preventDefault();
       const modal = document.getElementById(MODAL_ID);
       if (modal) {

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Azure DevOps Timesheet",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Automacoes de lancamento de horas no Azure DevOps.",
   "permissions": [
     "storage"
@@ -21,5 +21,5 @@
       "world": "MAIN"
     }
   ],
-  "version_name": "1.0.0 (build 2026.04.08.4)"
+  "version_name": "1.0.1 (build 2026.04.14.1)"
 }

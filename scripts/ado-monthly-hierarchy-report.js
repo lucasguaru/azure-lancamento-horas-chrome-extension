@@ -3,8 +3,10 @@
   const MODAL_ID = "__lh_monthly_hierarchy_modal__";
   const LS_PREFIX = "__lh_monthly_hierarchy_v1_";
   const LS_WEEKENDS = "__lh_monthly_hierarchy_show_weekends__";
+  const LS_LAST_MONTH = "__lh_monthly_hierarchy_last_month__";
   const KEY_OPEN_MODAL = "F3";
-  const BUILD_VERSION = "2026.04.01.1";
+  const LS_FLOATING_BTNS_HIDDEN = "__lh_floating_buttons_hidden__";
+  const BUILD_VERSION = __BUILD_VERSION__;
 
   if (document.getElementById(WIDGET_ID)) document.getElementById(WIDGET_ID).remove();
   if (document.getElementById(MODAL_ID)) document.getElementById(MODAL_ID).remove();
@@ -137,6 +139,36 @@
 
   const { org: ORG, project: PROJECT } = parseOrgProject();
   const ADO_BASE = `https://dev.azure.com/${encodeURIComponent(ORG)}/${encodeURIComponent(PROJECT)}/_apis`;
+
+  function areFloatingButtonsHidden() {
+    try { return localStorage.getItem(LS_FLOATING_BTNS_HIDDEN) === "1"; } catch { return false; }
+  }
+
+  function applyFloatingButtonsVisibility() {
+    const hidden = areFloatingButtonsHidden();
+    const ids = ["__lh_weekly_widget_btn__", "__lh_monthly_hierarchy_btn__"];
+    for (const id of ids) {
+      const el = document.getElementById(id);
+      if (!el) continue;
+      el.style.display = hidden ? "none" : "";
+    }
+  }
+
+  function ensureFloatingButtonsHotkeyInstalled() {
+    if (window.__lhFloatingButtonsHotkeyInstalled) return;
+    window.__lhFloatingButtonsHotkeyInstalled = true;
+    document.addEventListener("keydown", (e) => {
+      const key = String(e.key || "");
+      const code = String(e.code || "");
+      const isCtrlF2 = (e.ctrlKey || e.metaKey) && !e.altKey && (code === "F2" || key === "F2");
+      if (!isCtrlF2) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const next = !areFloatingButtonsHidden();
+      try { localStorage.setItem(LS_FLOATING_BTNS_HIDDEN, next ? "1" : "0"); } catch {}
+      applyFloatingButtonsVisibility();
+    }, true);
+  }
 
   async function adoFetchJson(url, options = {}) {
     const res = await fetch(url, {
@@ -771,6 +803,8 @@
   const triggerOpen = () => { if (!document.getElementById(MODAL_ID)) openModal(); };
   btn.onclick = triggerOpen;
   document.body.appendChild(btn);
+  ensureFloatingButtonsHotkeyInstalled();
+  applyFloatingButtonsVisibility();
 
   document.addEventListener("keydown", (e) => {
     if (e.key === KEY_OPEN_MODAL) {

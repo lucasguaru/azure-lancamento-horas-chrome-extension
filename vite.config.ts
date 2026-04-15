@@ -1,37 +1,22 @@
 import { defineConfig } from "vite";
-import { resolve } from "node:path";
-import { readFileSync, writeFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 
-type BuildStamp = { ymd: string; n: number };
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
-function computeBuildVersion(projectRoot: string): string {
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = String(now.getMonth() + 1).padStart(2, "0");
-  const d = String(now.getDate()).padStart(2, "0");
-  const ymd = `${y}.${m}.${d}`;
-
+/** Lê o stamp já gravado pelo `prebuild` (sem incrementar de novo). */
+function readBuildVersionFromStamp(projectRoot: string): string {
   const stampPath = resolve(projectRoot, ".build-version.json");
-  let stamp: BuildStamp | null = null;
-  try {
-    stamp = JSON.parse(readFileSync(stampPath, "utf8"));
-  } catch {
-    stamp = null;
+  const stamp = JSON.parse(readFileSync(stampPath, "utf8")) as { ymd?: string; n?: number };
+  if (!stamp?.ymd || stamp.n == null) {
+    throw new Error(".build-version.json inválido. Use `npm run build` (prebuild atualiza o stamp).");
   }
-
-  const nextN = stamp?.ymd === ymd ? Number(stamp?.n || 0) + 1 : 1;
-  const next: BuildStamp = { ymd, n: nextN };
-  try {
-    writeFileSync(stampPath, JSON.stringify(next, null, 2), "utf8");
-  } catch {
-    // Se falhar por permissão/FS, segue sem persistir.
-  }
-
-  return `${ymd}.${nextN}`;
+  return `${stamp.ymd}.${stamp.n}`;
 }
 
 export default defineConfig(() => {
-  const buildVersion = computeBuildVersion(__dirname);
+  const buildVersion = readBuildVersionFromStamp(__dirname);
   const holidaysPath = resolve(__dirname, "public", "holidays", "br-national-2026-2030.json");
   let holidaysJson = "[]";
   try {
@@ -44,22 +29,22 @@ export default defineConfig(() => {
       __BUILD_VERSION__: JSON.stringify(buildVersion),
       __BR_NATIONAL_HOLIDAYS_2026_2030__: holidaysJson
     },
-  build: {
-    outDir: "dist",
-    emptyOutDir: true,
-    sourcemap: true,
-    lib: {
-      entry: resolve(__dirname, "src/content/content-main.ts"),
-      formats: ["es"],
-      fileName: () => "content.js"
-    },
-    rollupOptions: {
-      output: {
-        entryFileNames: "content.js",
-        chunkFileNames: "chunks/[name]-[hash].js",
-        assetFileNames: "assets/[name]-[hash][extname]"
+    build: {
+      outDir: "dist",
+      emptyOutDir: true,
+      sourcemap: true,
+      lib: {
+        entry: resolve(__dirname, "src/content/content-main.ts"),
+        formats: ["es" as const],
+        fileName: () => "content.js"
+      },
+      rollupOptions: {
+        output: {
+          entryFileNames: "content.js",
+          chunkFileNames: "chunks/[name]-[hash].js",
+          assetFileNames: "assets/[name]-[hash][extname]"
+        }
       }
     }
-  }
   };
 });

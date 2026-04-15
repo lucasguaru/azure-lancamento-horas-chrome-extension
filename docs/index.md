@@ -11,7 +11,7 @@ Extensão (Manifest V3) para **automatizar e facilitar o lançamento de horas** 
 
 Este modo é para quem **só quer usar** a extensão sem clonar o repositório.
 
-1. Baixe o arquivo [`chrome-ado-hours-1.0.0.zip`](https://github.com/orangedoorit/azure-lancamento-horas-chrome-extension/releases/download/v1.0.0/chrome-ado-hours-1.0.0.zip)
+1. Baixe o arquivo [chrome-ado-hours-1.0.0.zip](chrome-ado-hours-1.0.0.zip)
 2. Extraia o ZIP em uma pasta (ex.: `chrome-ado-hours/`)
 3. No Chrome, abra `chrome://extensions`
 4. Ative **Developer mode**

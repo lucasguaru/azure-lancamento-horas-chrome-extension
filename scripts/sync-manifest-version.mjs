@@ -1,10 +1,10 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
+import { bumpBuildVersion } from "./build-version.mjs";
 
 const root = resolve(process.cwd());
 const pkgPath = resolve(root, "package.json");
 const manifestPath = resolve(root, "public", "manifest.json");
-const stampPath = resolve(root, ".build-version.json");
 
 function safeParseJson(text, fallback) {
   try {
@@ -24,11 +24,10 @@ if (!manifest?.manifest_version) {
   throw new Error("Não foi possível ler public/manifest.json.");
 }
 
-const stamp = safeParseJson(await readFile(stampPath, "utf8"), null);
-const buildStamp = stamp?.ymd && stamp?.n ? `${stamp.ymd}.${stamp.n}` : null;
+// Um único bump por build; o Vite só lê o mesmo valor (sem incrementar de novo).
+const buildStamp = bumpBuildVersion(root);
 
 manifest.version = String(pkg.version);
-manifest.version_name = buildStamp ? `${pkg.version} (build ${buildStamp})` : String(pkg.version);
+manifest.version_name = `${pkg.version} (build ${buildStamp})`;
 
 await writeFile(manifestPath, JSON.stringify(manifest, null, 2) + "\n", "utf8");
-

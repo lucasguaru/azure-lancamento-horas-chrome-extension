@@ -12,7 +12,7 @@ Extensão (Manifest V3) para **automatizar e facilitar o lançamento de horas** 
 Este modo é para quem **só quer usar** a extensão sem clonar o repositório.
 
 1. Baixe o arquivo [`chrome-ado-hours-1.0.0.zip`](https://github.com/orangedoorit/azure-lancamento-horas-chrome-extension/releases/download/v1.0.0/chrome-ado-hours-1.0.0.zip)
-2. Extraia o ZIP em uma pasta (ex.: `chrome-ado-hours/`)
+2. Extraia o ZIP em uma pasta (ex.: `chrome-ado-hours/`). O conteúdo fica **na raiz** dessa pasta (`manifest.json`, `content.js`, etc.); **não** há uma subpasta `dist/` dentro do arquivo.
 3. No Chrome, abra `chrome://extensions`
 4. Ative **Developer mode**
 5. Clique em **Load unpacked** e selecione a pasta extraída (ela deve conter `manifest.json` e `content.js`)
@@ -129,7 +129,7 @@ Na tela de criar task (e também em edição de work item), adiciona uma UI inli
 ## Desenvolvimento
 
 - **Build**: `npm run build` (gera `dist/`)
-- **ZIP para distribuir**: `npm run zip` (gera `dist/chrome-ado-hours-<versao>.zip`)
+- **ZIP para distribuir**: `npm run zip` (gera `dist/chrome-ado-hours-<versao>.zip` com os artefatos **na raiz** do ZIP, pronto para extrair e carregar no Chrome)
 - **Watch**: `npm run dev` (build em modo `--watch`)
 - **Typecheck**: `npm run typecheck`
 
