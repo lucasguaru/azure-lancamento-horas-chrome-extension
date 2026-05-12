@@ -403,8 +403,12 @@
   function applyDesiredPriorityToHiddenField() {
     const priCtl = findPriorityControl();
     if (!priCtl) return;
-    if (!Number.isFinite(Number(uiState.desiredPriority))) return;
-    setReactInputValue(priCtl, String(uiState.desiredPriority));
+    const n = Number(uiState.desiredPriority);
+    if (!Number.isFinite(n)) return;
+    // O combobox do ADO espera o texto exibido (ex.: "1 - High"), não só o dígito.
+    const preset = PRIORITY_PRESETS.find((p) => p.value === n);
+    const display = preset?.hint ?? String(n);
+    setReactInputValue(priCtl, display);
   }
 
   function applyStartDateToHiddenField() {

@@ -6,6 +6,7 @@
   const LS_DATE_COLS   = "__lh_show_date_cols__";
   const LS_HIERARCHY   = "__lh_group_hierarchy__";
   const LS_LH_ACTIONS  = "__lh_show_lh_actions__";
+  const LS_HIDE_DONE   = "__lh_hide_done_status__";
   const LS_VIEW_MODE   = "__lh_view_mode__";
   const LS_RANGE_START = "__lh_range_start__";
   const LS_RANGE_END   = "__lh_range_end__";
@@ -433,6 +434,7 @@
       return true;
     }
   })();
+  let hideDone = (() => { try { return localStorage.getItem(LS_HIDE_DONE) === "1"; } catch { return false; } })();
   let editMode     = false;
   let pendingEdits = new Map();  // `${taskId}__${dayKey}` → number
   let editBaseData = null;       // snapshot de rows ao entrar no modo edição
@@ -566,6 +568,13 @@
             <span id="lh-weekend-alert" style="display:none; color:#b91c1c; background:#fef2f2; border:1px solid #fecaca; border-radius:999px; padding:0 6px; font-size:11px; line-height:16px;">⚠</span>
           </span>
         </label>
+        <label style="cursor:pointer; display:flex; align-items:center; gap:5px; font-size:12px;">
+          <input type="checkbox" id="lh-hide-done-toggle" style="cursor:pointer;" />
+          <span style="display:inline-flex; align-items:center; gap:4px;">
+            Ocultar Done
+            <span id="lh-hide-done-alert" style="display:none; color:#b91c1c; background:#fef2f2; border:1px solid #fecaca; border-radius:999px; padding:0 6px; font-size:11px; line-height:16px;">⚠</span>
+          </span>
+        </label>
       </div>
     </div>
 
@@ -579,7 +588,12 @@
   }
 
   // ── table render ───────────────────────────────────────────────────────────
+  function isDoneState(status) {
+    return String(status || "").trim().toLowerCase() === "done";
+  }
+
   function renderTable({ rows, allDayDates }, totalsCallback, onFixRow, onStatusAction, onSyncCompletedWork) {
+    const tableRows = hideDone ? rows.filter((r) => !isDoneState(r.status)) : rows;
     const visibleDates = showWeekends
       ? allDayDates
       : allDayDates.filter(d => d.getDay() !== 0 && d.getDay() !== 6);
@@ -659,7 +673,7 @@
     // Calcula totais considerando pendingEdits em modo edição
     function computeTotals() {
       const totals = Object.fromEntries(visibleKeys.map(k => [k, 0]));
-      for (const r of rows) {
+      for (const r of tableRows) {
         visibleKeys.forEach(k => {
           const pk = `${r.id}__${k}`;
           const val = editMode && pendingEdits.has(pk) ? pendingEdits.get(pk) : (r.byDay[k] || 0);
@@ -675,7 +689,7 @@
         for (const [pk, newVal] of pendingEdits.entries()) {
           const [idStr, dayKey] = pk.split("__");
           const taskId = Number(idStr);
-          const row = rows.find(x => x.id === taskId);
+          const row = tableRows.find(x => x.id === taskId);
           if (!row) continue;
           const origVal = Number(row.byDay?.[dayKey] || 0);
           const diff = Number(newVal) - origVal;
@@ -684,7 +698,7 @@
         }
       }
 
-      return round2(rows.reduce((sum, r) => {
+      return round2(tableRows.reduce((sum, r) => {
         const base = parseHours(r.completedWork);
         const delta = deltaByTask.get(r.id) || 0;
         return sum + base + delta;
@@ -742,13 +756,13 @@
     const fixedColumns = 4 + (showDateCols ? 2 : 0) + (showLhActions ? 2 : 0);
     const totalColumns = fixedColumns + visibleKeys.length;
     const sortedRows = groupByHierarchy
-      ? rows.slice().sort((a, b) => {
+      ? tableRows.slice().sort((a, b) => {
           const ga = String(a?.hierarchy?.groupKey || "");
           const gb = String(b?.hierarchy?.groupKey || "");
           const cmp = ga.localeCompare(gb, "pt-BR", { sensitivity: "base" });
           return cmp !== 0 ? cmp : (a.id - b.id);
         })
-      : rows.slice().sort((a, b) => a.id - b.id);
+      : tableRows.slice().sort((a, b) => a.id - b.id);
     let lastGroupKey = null;
 
     sortedRows.forEach((r, ri) => {
@@ -1663,6 +1677,8 @@
     const dateColsToggle = document.getElementById("lh-date-cols-toggle");
     const lhActionsToggle = document.getElementById("lh-lh-actions-toggle");
     const lhActionsAlert = document.getElementById("lh-lh-actions-alert");
+    const hideDoneToggle = document.getElementById("lh-hide-done-toggle");
+    const hideDoneAlert = document.getElementById("lh-hide-done-alert");
     const content       = document.getElementById("lh-content");
     const meta          = document.getElementById("lh-meta");
 
@@ -1670,6 +1686,7 @@
     hierarchyToggle.checked = groupByHierarchy;
     dateColsToggle.checked = showDateCols;
     lhActionsToggle.checked = showLhActions;
+    if (hideDoneToggle) hideDoneToggle.checked = hideDone;
 
     let cachedData = null;
     const setModeButtonStyles = () => {
@@ -1703,6 +1720,7 @@
       hierarchyToggle.disabled = !on;
       dateColsToggle.disabled = !on;
       lhActionsToggle.disabled = !on;
+      if (hideDoneToggle) hideDoneToggle.disabled = !on;
       modeWeekBtn.disabled = !on || editMode;
       modeMonthBtn.disabled = !on || editMode;
       modeRangeBtn.disabled = !on || editMode;
@@ -1732,6 +1750,16 @@
       weekendAlert.style.display = hasHiddenWeekendHours ? "inline-flex" : "none";
       weekendAlert.title = hasHiddenWeekendHours
         ? `${fmt(hiddenWeekendHours)}h lançadas no fim de semana estão ocultas. Marque o toggle para exibir.`
+        : "";
+    };
+
+    const setHideDoneAlert = (data) => {
+      if (!hideDoneAlert || !data) return;
+      const doneRows = (data.rows || []).filter(r => isDoneState(r.status));
+      const n = doneRows.length;
+      hideDoneAlert.style.display = hideDone && n > 0 ? "inline-flex" : "none";
+      hideDoneAlert.title = hideDone && n > 0
+        ? `${n} item(ns) com status Done ${n === 1 ? "está oculto" : "estão ocultos"}. Desmarque "Ocultar Done" para exibir.`
         : "";
     };
 
@@ -1868,6 +1896,7 @@
         renderInto(cached);
         setLhActionsAlert(cached.rows || []);
         setWeekendAlert(cached);
+        setHideDoneAlert(cached);
         meta.textContent = `Cache de ${new Date(cached.ts).toLocaleString()} — atualizando…`;
       } else if (!content.firstChild) {
         content.innerHTML = `<div style="padding:12px; color:#666;">Carregando…</div>`;
@@ -1883,6 +1912,7 @@
         renderInto(data);
         setLhActionsAlert(data.rows || []);
         setWeekendAlert(data);
+        setHideDoneAlert(data);
         const inconsistentCount = data.rows.filter(r => r.inconsistent).length;
         const cwMismatchCount = data.rows.filter(r => r.cwMismatch).length;
         const issuesText = (inconsistentCount + cwMismatchCount) > 0
@@ -2030,6 +2060,24 @@
       if (cachedData) renderInto(cachedData);
       setLhActionsAlert((cachedData && cachedData.rows) || []);
     };
+
+    if (hideDoneToggle) {
+      hideDoneToggle.onchange = () => {
+        hideDone = hideDoneToggle.checked;
+        try { localStorage.setItem(LS_HIDE_DONE, hideDone ? "1" : "0"); } catch {}
+        if (hideDone && editMode && cachedData) {
+          const doneIds = new Set(cachedData.rows.filter(r => isDoneState(r.status)).map(r => r.id));
+          for (const pk of [...pendingEdits.keys()]) {
+            const taskId = Number(String(pk).split("__")[0]);
+            if (doneIds.has(taskId)) pendingEdits.delete(pk);
+          }
+        }
+        if (cachedData) {
+          renderInto(cachedData);
+          setHideDoneAlert(cachedData);
+        }
+      };
+    }
 
     modeWeekBtn.onclick = async () => {
       if (editMode || viewMode === "week") return;

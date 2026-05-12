@@ -128,6 +128,7 @@ Na tela de criar task (e também em edição de work item), adiciona uma UI inli
 
 ## Desenvolvimento
 
+- **Arquitetura do código** (features, diretórios, fluxo de entrada): [ARCHITECTURE.md](./ARCHITECTURE.md)
 - **Build**: `npm run build` (gera `dist/`)
 - **ZIP para distribuir**: `npm run zip` (gera `dist/chrome-ado-hours-<versao>.zip` com os artefatos **na raiz** do ZIP, pronto para extrair e carregar no Chrome)
 - **Watch**: `npm run dev` (build em modo `--watch`)
